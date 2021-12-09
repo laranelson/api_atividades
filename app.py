@@ -1,13 +1,32 @@
 from flask import Flask
 from flask_restful import Resource, Api, request
-from models import Pessoas, Atividades
+from models import Pessoas, Atividades, Usuarios
+from flask_httpauth import HTTPBasicAuth
 
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 api = Api(app)
 
+# USUARIOS = {
+#     'nelson':'123',
+#     'alice':'123'
+# }
+
+# @auth.verify_password
+# def veirificacao(usuario, senha):
+#     if not(usuario, senha):
+#         return False
+#     return USUARIOS.get(usuario) == senha
+
+@auth.verify_password
+def verificacao(usuario, senha):
+    if not(usuario, senha):
+        return False
+    return Usuarios.query.filter_by(usuario=usuario, senha=senha).first()
 
 # Criando class Pessoa para poder efetuar o GET, PUT e DELETE
 class Pessoa(Resource):
+    @auth.login_required # Esse decorado foi incluindo, porque para acessar esse metodo é preciso tá logado
     def get(self, nome):
         pessoa = Pessoas.query.filter_by(nome=nome).first()
         try:
@@ -45,6 +64,7 @@ class Pessoa(Resource):
 
 # Criando class para listar todas as pessoas e inserir nova pessoa
 class ListarPessoas(Resource):
+    @auth.login_required
     def get(self):
         pessoas = Pessoas.query.all()
         response = [{'id':i.id, 'nome':i.nome, 'idade':i.idade} for i in pessoas]
@@ -63,6 +83,7 @@ class ListarPessoas(Resource):
 
 # Criando class para listar todas as atividades e inserir nova atividade
 class ListarAtividades(Resource):
+    @auth.login_required
     def get(self):
         atividades = Atividades.query.all()
         response = [{'id':i.id, 'nome':i.nome, 'pessoa':i.pessoa.nome} for i in atividades]

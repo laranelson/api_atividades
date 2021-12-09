@@ -1,4 +1,4 @@
-from models import Pessoas
+from models import Pessoas, Usuarios
 
 def insere_pessoas():
     nome = input('Digite o nome da pessoa: ')
@@ -25,8 +25,28 @@ def delete():
     pessoa = Pessoas.query.filter_by(nome=pessoa_old).first()
     pessoa.delete()
 
+def insere_usuario(usuario, senha):
+    usuario = input('Digite o nome de usuario: ')
+    senha = int(input('Crie sua senha: '))
+    usuario = Usuarios(usuario=usuario, senha=senha)
+    usuario.save()
+    print(usuario, 'foi cadastrado com sucesso!')
+
+def listar_usuarios():
+    usuarios = Usuarios.query.all()
+    print(usuarios)
+
+def alterar_usuario():
+    usuario_old = input('Digite o nome da pessoa: ')
+    usuario = Usuarios.query.filter_by(usuario=usuario_old).first()
+    usuario.senha = input('Digite a nova senha: ')
+    usuario.save()
+
 if __name__ == '__main__':
-    insere_pessoas()
+    #insere_pessoas()
     #altera_pessoa()
     #delete()
     #consulta_pessoas()
+    #insere_usuario('','')
+    #listar_usuarios()
+    alterar_usuario()
